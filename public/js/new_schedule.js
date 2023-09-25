@@ -1,15 +1,12 @@
-/* Функция проверки нажатия кнопки на форме */
 $(document).ready(function () {
+    document.getElementById('date_departure').valueAsDate= new Date();
     $("#scheduleButton").click(
         function () {
             sendAjaxFormNewSchedule('result', 'ajaxFormNewSchedule', 'ajax/ajax_form_new_schedule.php');
             return false;
         }
     );
-});
-$(document).ready(function () {
-    sendAjaxCalcArrival('result', 'ajax/ajax_calc_arrival.php');
-    sendAjaxFreeCourier('result', 'ajax/ajax_free_courier.php');
+
     $("#courier").click(
         function () {
             sendAjaxFreeCourier('result', 'ajax/ajax_free_courier.php');
@@ -29,11 +26,9 @@ function sendAjaxFreeCourier(result, url) {
             date_departure: date_departure,
             date_arrival: date_arrival
         },
-        beforeSend: function () {
-            $('#courier').find('option').remove();
-        },
         success: function (response) {
             result = $.parseJSON(response);
+            $('#courier').find('option').remove();
             for (var i = 0; i < result.length; i++) {
                 var option = document.createElement("option");
                 option.setAttribute("value", result[i].toString());
@@ -45,7 +40,6 @@ function sendAjaxFreeCourier(result, url) {
 
 }
 
-/* Фунция отправки Ajax запроса на сиполнение */
 function sendAjaxFormNewSchedule(result, ajax_form, url) {
 
     $.ajax({
@@ -55,12 +49,20 @@ function sendAjaxFormNewSchedule(result, ajax_form, url) {
         data: $("#" + ajax_form).serialize(),  // Сеарилизуем объект
         beforeSend: function () {
             $("#scheduleButton").prop("disabled", true);
+            $("#result_insert_schedule").empty();
         },
         success: function (response) { //Данные отправлены успешно
             result = $.parseJSON(response);
-            $('#result_insert_schedule').html(result.message + '<br>Город: ' + result.city + '<br>ФИО курьера: ' + result.courier +
-                '<br>Дата выезда: ' + result.date_departure + '<br>Дата прибытия: ' + result.date_arrival);
+            if (result.flag == true) {
+                $('#result_insert_schedule').html(result.message + '<br>Город: ' + result.city + '<br>ФИО курьера: ' + result.courier +
+                    '<br>Дата выезда: ' + result.date_departure + '<br>Дата прибытия: ' + result.date_arrival);
+            } else {
+                $('#result_insert_schedule').html(result.message);
+            }
             $("#scheduleButton").prop("disabled", false);
+
+            $("#clearButton").prop("disabled", false);
+            sendAjaxFreeCourier('result', 'ajax/ajax_free_courier.php');
         },
         error: function () { // Данные не отправлены
             $('#result_insert_schedule').html('Ошибка. Данные не отправлены.');

@@ -1,4 +1,3 @@
-/* Функция проверки нажатия кнопки на форме */
 $(document).ready(function () {
     $("#courierButton").click(
         function () {
@@ -16,11 +15,19 @@ function sendAjaxFormCourier(result, ajax_form, url) {
         data: $("#" + ajax_form).serialize(),
         beforeSend: function () {
             $("#courierButton").prop("disabled", true);
+            $("#result_insert_courier").empty();
         },
         success: function (response) {
+            console.log(response);
             result = $.parseJSON(response);
-            $('#result_insert_courier').html('Результат : ' + result.message + ' ' + result.lastname + ' ' + result.firstname + ' ' + result.patronymic);
-            $("#courierButton").prop("disabled", false);
+            console.log(result);
+
+            if (result.flag == false) {
+                $("#result_insert_courier").append(result.message);
+            } else {
+                $('#result_insert_courier').append(result.message + ' ' + result.lastname + ' ' + result.firstname + ' ' + result.patronymic);
+                $("#courierButton").prop("disabled", false);
+            }
         },
         error: function () {
             $('#result_insert_courier').html('Ошибка. Данные не отправлены.');

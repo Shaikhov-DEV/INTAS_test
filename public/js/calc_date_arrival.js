@@ -1,7 +1,9 @@
 $(document).ready(function () {
+
+    sendAjaxCalcArrival('result', 'ajax/ajax_calc_arrival.php');
+    sendAjaxFreeCourier('result', 'ajax/ajax_free_courier.php');
     $("#date_departure").on("change",
         function () {
-            sendAjaxFreeCourier('result', 'ajax/ajax_free_courier.php');
             sendAjaxCalcArrival('result', 'ajax/ajax_calc_arrival.php');
             return false;
         }
@@ -19,6 +21,8 @@ $(document).ready(function () {
 function sendAjaxCalcArrival(result, url) {
     let city = $('#city').val();
     let date_departure = new Date($('#date_departure').val());
+
+    sendAjaxFreeCourier('result', 'ajax/ajax_free_courier.php');
     $.ajax({
         url: url,
         method: 'post',
